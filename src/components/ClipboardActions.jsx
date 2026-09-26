@@ -1,6 +1,5 @@
 import { Copy } from 'lucide-react';
 import { buildFullAttendanceText, buildRollListText } from '../utils/format.js';
-import { CLASS_LABEL } from '../config/constants.js';
 
 async function copyText(text, onDone) {
   try {
@@ -13,14 +12,14 @@ async function copyText(text, onDone) {
 
 export default function ClipboardActions({ students, statusById, date, session, onToast, layout = 'row' }) {
   function handleCopyPresent() {
-    const text = buildRollListText(students, statusById, 'present');
+    const text = buildRollListText(students, statusById, 'present', date, session);
     copyText(text, (ok) =>
       onToast(ok ? 'Present roll numbers copied' : 'Clipboard unavailable')
     );
   }
 
   function handleCopyAbsent() {
-    const text = buildRollListText(students, statusById, 'absent');
+    const text = buildRollListText(students, statusById, 'absent', date, session);
     copyText(text, (ok) => onToast(ok ? 'Absent roll numbers copied' : 'Clipboard unavailable'));
   }
 
@@ -30,7 +29,6 @@ export default function ClipboardActions({ students, statusById, date, session, 
       statusById,
       date,
       session,
-      classLabel: CLASS_LABEL,
     });
     copyText(text, (ok) => onToast(ok ? 'Full attendance copied' : 'Clipboard unavailable'));
   }
