@@ -23,4 +23,4 @@ export const SESSIONS = {
 // Paste the "Web app URL" you get after deploying the Apps Script
 // (see google-apps-script.js) here. Leave empty to keep the app fully
 // offline — the Sync button will just tell the user it isn't configured.
-export const GOOGLE_SHEET_WEBAPP_URL = '';
+export const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwKXHbN_LR-r_M77KtQyQMr0mULoJFS0Pxtm81kZ3gn2OQRA-dPrz1UPdW07xuaAnmy/exec';
