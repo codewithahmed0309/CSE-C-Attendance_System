@@ -1,9 +1,7 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Loader2, UploadCloud } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { CLASS_LABEL } from '../config/constants.js';
 import ClipboardActions from './ClipboardActions.jsx';
-import { submitAttendanceToSheet } from '../utils/sheetSync.js';
 
 export default function CompletionScreen({
   students,
@@ -15,24 +13,6 @@ export default function CompletionScreen({
   onNewAttendance,
   onToast,
 }) {
-  const [syncing, setSyncing] = useState(false);
-
-  async function handleSync() {
-    setSyncing(true);
-    const result = await submitAttendanceToSheet(students, statusById, date, session);
-    setSyncing(false);
-
-    if (result.ok) {
-      onToast('Synced to Google Sheet');
-    } else if (result.reason === 'not-configured') {
-      onToast('Google Sheet not connected yet');
-    } else if (result.reason === 'duplicate') {
-      onToast(`${session} attendance was already recorded`);
-    } else {
-      onToast('Could not reach Google Sheet');
-    }
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -68,15 +48,6 @@ export default function CompletionScreen({
           className="w-full rounded-lg bg-accent py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
         >
           Review Attendance
-        </button>
-
-        <button
-          onClick={handleSync}
-          disabled={syncing}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-border py-2.5 text-sm font-medium text-text-primary transition-colors hover:border-accent/40 hover:text-accent disabled:opacity-60"
-        >
-          {syncing ? <Loader2 size={15} className="animate-spin" /> : <UploadCloud size={15} />}
-          {syncing ? 'Syncing…' : 'Sync to Google Sheet'}
         </button>
 
         <ClipboardActions
