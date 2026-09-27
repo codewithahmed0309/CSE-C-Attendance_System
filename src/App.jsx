@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import LoginPage from './components/LoginPage.jsx';
 import AppShell from './components/AppShell.jsx';
 import SessionSelector from './components/SessionSelector.jsx';
@@ -9,6 +9,7 @@ import ConfirmationModal from './components/ConfirmationModal.jsx';
 import Toast from './components/Toast.jsx';
 import { useAttendance } from './hooks/useAttendance.js';
 import { formatDate } from './utils/format.js';
+import { submitAttendanceToSheet } from './utils/sheetSync.js';
 
 export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -17,6 +18,23 @@ export default function App() {
 
   const attendance = useAttendance();
   const date = useMemo(() => formatDate(), []);
+
+  // Silently fire the Google Sheet sync exactly once per completed
+  // session — no button, no toast, no UI trace either way. Re-opening
+  // Review and coming back to the completion screen must not re-trigger
+  // it, so the "already synced" state is tracked here rather than inside
+  // CompletionScreen (which unmounts/remounts as the user navigates).
+  const syncedRef = useRef(false);
+
+  useEffect(() => {
+    if (attendance.completed && !syncedRef.current) {
+      syncedRef.current = true;
+      submitAttendanceToSheet(attendance.students, attendance.statusById, date, attendance.session);
+    }
+    if (!attendance.completed) {
+      syncedRef.current = false;
+    }
+  }, [attendance.completed, attendance.students, attendance.statusById, attendance.session, date]);
 
   const showToast = useCallback((message) => {
     setToastMessage(message);
